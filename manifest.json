@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "字幕罐头 SubCan",
+  "version": "1.2.0",
+  "description": "把 B站 UP主 的视频字幕装进罐头带走：输入 UP主 名称或主页链接，自动识别全部视频的字幕，按语言勾选后一键打包下载。任务在后台运行，关闭弹窗不中断。",
+  "permissions": [
+    "storage",
+    "downloads",
+    "cookies",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "https://api.bilibili.com/*",
+    "https://*.hdslb.com/*",
+    "https://www.bilibili.com/*",
+    "https://space.bilibili.com/*"
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "字幕罐头 SubCan — B站字幕批量下载",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  }
+}

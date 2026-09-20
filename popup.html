@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="popup.css" />
+  <title>字幕罐头 SubCan — B站字幕批量下载</title>
+</head>
+<body>
+  <header>
+    <h1>🥫 字幕罐头 <span class="en">SubCan</span></h1>
+    <button id="btnHelp" class="link" type="button">使用说明</button>
+  </header>
+
+  <section id="help" class="help hidden">
+    <ol>
+      <li>认证：<b>推荐留空</b>——插件直接用你浏览器里的 B站 登录态；也可粘贴 Cookie（见下）。</li>
+      <li>输入 UP主 的<b>名称 / 主页链接 / UID</b>，点「获取视频列表」。</li>
+      <li>插件在<b>后台</b>列出全部视频并检测字幕，可随时关掉本窗口，稍后再回来看进度（图标上会显示进度）。</li>
+      <li>勾选你想下载字幕的视频。</li>
+      <li>点「下载并打包」，完成后生成 zip 存到本地。</li>
+    </ol>
+    <p class="tip">
+      <b>不会因为切标签/关弹窗而中断</b>：任务跑在后台，关闭本窗口后继续运行，重新点图标即可续看。<br />
+      <b>Cookie 怎么填</b>：DevTools → Network → 刷新 → 点第一个 <code>www.bilibili.com</code> →
+      Headers → Request Headers → <code>cookie</code>，复制<b>整串</b>（形如
+      <code>SESSDATA=...; bili_jct=...</code>），粘进下面输入框，点「检测登录状态」验证。<br />
+      主页链接形如 <code>https://space.bilibili.com/123456</code>，最稳。
+    </p>
+  </section>
+
+  <section class="card">
+    <label class="lbl">认证（选填 Cookie）</label>
+    <textarea id="cookie" rows="2" placeholder="选填。留空 = 用浏览器登录态；填写 = 用这段 Cookie（如 SESSDATA=...; bili_jct=...）"></textarea>
+    <div class="btnrow">
+      <button id="btnCheckLogin" class="ghost" type="button">检测登录状态</button>
+      <button id="btnSave" class="ghost" type="button">保存</button>
+      <button id="btnClear" class="ghost" type="button">清空</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <label class="lbl">UP主 名称 / 主页链接 / UID</label>
+    <input id="upInput" type="text" placeholder="例如：老蒋巨好玩  或  https://space.bilibili.com/123456" />
+    <div class="btnrow">
+      <button id="btnFetch" type="button">获取视频列表</button>
+      <button id="btnReset" class="ghost" type="button" title="清空当前作者与列表，重新搜索">重置</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <label class="lbl">字幕语言（只下载勾选的语种，改完重新点「获取视频列表」生效）</label>
+    <div class="langrow">
+      <label class="langitem"><input type="checkbox" id="langZh" checked /> 中文（含 AI 字幕）</label>
+      <label class="langitem"><input type="checkbox" id="langEn" /> 英文</label>
+      <label class="langitem"><input type="checkbox" id="langOther" /> 其他语种</label>
+    </div>
+  </section>
+
+  <div id="status" class="status"></div>
+  <div id="progress" class="progress hidden"><div class="bar"></div></div>
+
+  <section id="listSection" class="hidden">
+    <div class="searchrow">
+      <span class="searchicon">🔍</span>
+      <input id="searchInput" type="text" placeholder="在结果里搜索关键词（标题 / BV号），实时过滤" />
+      <button id="searchClear" class="searchclear hidden" type="button" title="清空">✕</button>
+    </div>
+    <div class="toolbar">
+      <button id="btnSelectAll" class="ghost small" type="button">全选</button>
+      <button id="btnSelectNone" class="ghost small" type="button">清空选择</button>
+      <span id="countTip" class="count"></span>
+    </div>
+    <div id="list" class="list"></div>
+    <button id="btnDownload" type="button">下载并打包选中字幕</button>
+    <p class="warn">任务在后台运行，关掉本窗口也不会中断。</p>
+  </section>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
