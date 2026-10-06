@@ -8,7 +8,7 @@ import {
   downloadSubtitleJson,
   filterSubsByLangs
 } from './lib/bili.js';
-import { subtitleJsonToSrt } from './lib/srt.js';
+import { renderSubtitle } from './lib/srt.js';
 import { createZip } from './lib/zip.js';
 import { prepareAuth } from './lib/auth.js';
 
@@ -27,6 +27,7 @@ function idleJob() {
     isLogin: false,
     fileCount: 0,
     langs: ['zh'],
+    format: 'txt',
     upName: '',
     upInput: ''
   };
@@ -246,12 +247,13 @@ async function startDownload() {
       for (const part of subs) {
         for (const s of filterSubsByLangs(part.subtitles, job.langs)) {
           try {
-            const srt = subtitleJsonToSrt(await downloadSubtitleJson(s.url));
+            const text = renderSubtitle(await downloadSubtitleJson(s.url), job.format);
+            const ext = job.format === 'srt' ? 'srt' : 'txt';
             const partLabel =
               subs.length > 1 && part.part ? ` - P${part.index}_${sanitizeName(part.part)}` : '';
             files.push({
-              name: `${pad(++n)}_${sanitizeName(v.title)}${partLabel} [${sanitizeName(s.lanDoc)}].srt`,
-              data: srt
+              name: `${pad(++n)}_${sanitizeName(v.title)}${partLabel} [${sanitizeName(s.lanDoc)}].${ext}`,
+              data: text
             });
           } catch (e) {
             /* 单条失败不影响整体 */
@@ -315,6 +317,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
   if (msg?.type === 'startDownload') {
     job.selected = Array.isArray(msg.bvids) ? msg.bvids : job.selected;
+    job.format = msg.format === 'srt' ? 'srt' : 'txt';
     if (!isActive()) startDownload();
     sendResponse({ ok: true });
     return false;

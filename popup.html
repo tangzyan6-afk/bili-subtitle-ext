@@ -72,7 +72,20 @@
       <span id="countTip" class="count"></span>
     </div>
     <div id="list" class="list"></div>
-    <button id="btnDownload" type="button">下载并打包选中字幕</button>
+    <div class="dlrow">
+      <button id="btnDownload" type="button">下载并打包选中字幕</button>
+      <label class="fmt">
+        格式
+        <select id="fmtSelect" title="选择导出格式">
+          <option value="txt">TXT · 纯文本（AI 精读）</option>
+          <option value="srt">SRT · 带时间轴</option>
+        </select>
+      </label>
+    </div>
+    <div id="dlProgress" class="dlprog hidden">
+      <div class="dlprogbar"><div id="dlFill" class="dlprogfill"></div></div>
+      <div id="dlText" class="dlprogtxt"></div>
+    </div>
     <p class="warn">任务在后台运行，关掉本窗口也不会中断。</p>
   </section>
 

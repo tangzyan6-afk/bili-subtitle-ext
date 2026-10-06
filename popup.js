@@ -67,12 +67,33 @@ function isActive(j) {
   return j && ACTIVE.includes(j.phase);
 }
 
+// 下载/打包阶段的进度条：紧贴下载键，显示真实进度，确认"已点击、正在跑"
+const DOWNLOAD_PHASES = ['downloading', 'packing'];
+function renderDownloadProgress() {
+  const showing = DOWNLOAD_PHASES.includes(job?.phase);
+  const el = $('dlProgress');
+  const btn = $('btnDownload');
+  if (showing) {
+    el.classList.remove('hidden');
+    const { done = 0, total = 0 } = job.progress || {};
+    const pct = job.phase === 'packing' ? 100 : total > 0 ? Math.round((done / total) * 100) : 0;
+    $('dlFill').style.width = pct + '%';
+    $('dlText').textContent =
+      job.phase === 'packing' ? '正在打包压缩包…' : `正在下载字幕 ${done}/${total}（${pct}%）`;
+    btn.textContent = job.phase === 'packing' ? '正在打包…' : '正在下载…';
+  } else {
+    el.classList.add('hidden');
+    btn.textContent = '下载并打包选中字幕';
+  }
+}
+
 function render(j) {
   job = j || job;
   if (!job) return;
 
   setStatus(job.message || '', job.phase === 'error');
   $('progress').classList.toggle('hidden', !isActive(job));
+  renderDownloadProgress();
 
   const all = job.videos || [];
   currentFiltered = getFiltered(all);
@@ -176,6 +197,8 @@ function updateControls() {
   $('btnSelectNone').disabled = active;
   // 任务运行中不允许改语言，避免「检测口径」和「下载口径」对不上
   for (const id of ['langZh', 'langEn', 'langOther']) $(id).disabled = active;
+  // 任务运行中锁定输出格式，避免下载中途被改
+  $('fmtSelect').disabled = active;
   const sel = (job?.selected || []).length;
   $('btnDownload').disabled = active || sel === 0;
 }
@@ -212,7 +235,7 @@ $('btnDownload').addEventListener('click', () => {
     setStatus('请先勾选含字幕的视频', true);
     return;
   }
-  chrome.runtime.sendMessage({ type: 'startDownload', bvids });
+  chrome.runtime.sendMessage({ type: 'startDownload', bvids, format: $('fmtSelect').value });
 });
 
 $('btnSelectAll').addEventListener('click', () => {
@@ -315,16 +338,26 @@ $('cookie').addEventListener('input', () => {
 });
 $('cookie').addEventListener('blur', () => saveCookie(true));
 
-chrome.storage.local.get(['biliCookie', 'langFilter'], (res) => {
+chrome.storage.local.get(['biliCookie', 'langFilter', 'outFormat'], (res) => {
   if (res && res.biliCookie) $('cookie').value = res.biliCookie;
   if (res && Array.isArray(res.langFilter)) {
     $('langZh').checked = res.langFilter.includes('zh');
     $('langEn').checked = res.langFilter.includes('en');
     $('langOther').checked = res.langFilter.includes('other');
   }
+  if (res && res.outFormat) $('fmtSelect').value = res.outFormat;
 });
 
 // 勾选变化即保存（语言筛选在下次「获取视频列表」时生效）
 for (const id of ['langZh', 'langEn', 'langOther']) {
   $(id).addEventListener('change', () => saveLangs(false));
 }
+
+// 输出格式变化即保存（下次下载生效）
+$('fmtSelect').addEventListener('change', async () => {
+  const v = $('fmtSelect').value;
+  await chrome.storage.local.set({ outFormat: v });
+  setStatus(
+    `输出格式已保存：${v === 'srt' ? 'SRT（带时间轴）' : 'TXT（纯文本，最适合 AI 精读）'}。下次下载生效。`
+  );
+});

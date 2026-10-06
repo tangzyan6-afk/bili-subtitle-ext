@@ -199,3 +199,50 @@ textarea:focus, input[type=text]:focus { outline: none; border-color: #fb7299; }
 .badge.loading { background: #fff7e8; color: #ff7d00; }
 
 .warn { font-size: 11px; color: #ff7d00; margin: 6px 2px 0; }
+
+.dlrow { display: flex; gap: 8px; align-items: center; }
+.dlrow #btnDownload { flex: 1; }
+.fmt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #61666d;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.fmt select {
+  border: 1px solid #dfe1e6;
+  border-radius: 8px;
+  padding: 7px 8px;
+  font-size: 12px;
+  font-family: inherit;
+  background: #fff;
+  color: #1f2329;
+  cursor: pointer;
+  max-width: 165px;
+}
+.fmt select:focus { outline: none; border-color: #fb7299; }
+.fmt select:disabled { opacity: .5; cursor: not-allowed; }
+
+/* 下载进度条：紧贴下载键，确定性宽度 + 百分比文案 */
+.dlprog { margin: 8px 0 0; }
+.dlprogbar {
+  height: 6px;
+  background: #ffe1ea;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.dlprogfill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #fb7299, #ff9db8);
+  border-radius: 3px;
+  transition: width .2s ease;
+}
+.dlprogtxt {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #61666d;
+  text-align: center;
+}
