@@ -1,0 +1,4 @@
+# 打包发布时忽略的文件（git archive / GitHub 源码包会自动排除）
+.gitignore    export-ignore
+icons/source.png    export-ignore
+icons/make_icons.py    export-ignore
